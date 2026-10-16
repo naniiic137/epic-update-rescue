@@ -20,7 +20,31 @@ It makes the launcher see the new version as already installed. Then **Verify** 
 
 Real case (the reason this exists): Fortnite 42.40 wanted 44.78 GB after a paused update. After the fix, Verify finished in about 35 minutes on a hard drive, downloading only the changes.
 
-## How to use it
+## Run it with one command
+
+Open **PowerShell** and paste:
+
+```powershell
+irm https://raw.githubusercontent.com/naniiic137/epic-update-rescue/main/get.ps1 | iex
+```
+
+Or from **cmd** (Command Prompt):
+
+```bat
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/naniiic137/epic-update-rescue/main/get.ps1 | iex"
+```
+
+It downloads the script from this repo into `%TEMP%\EpicUpdateRescue` and runs it in its own PowerShell. It shows the stuck game(s) and asks before closing the launcher and before changing anything. Then do steps 4 and 5 below (Verify).
+
+Running code from the internet with one command is only as safe as its source: read [`get.ps1`](get.ps1) (20 lines) and [`EpicUpdateRescue.ps1`](EpicUpdateRescue.ps1) first if you like, or use the download below.
+
+To pass options (for example only list the games):
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/naniiic137/epic-update-rescue/main/get.ps1))) -List
+```
+
+## How to use it (download)
 
 1. **Download** this repo: green **Code** button → **Download ZIP**, then unzip it.
 2. **Double-click `Fix-Epic-Update.bat`.**
