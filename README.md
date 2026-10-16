@@ -16,6 +16,8 @@ What happened: the launcher moved the game's record to its `Pending` folder and 
 
 It makes the launcher see the new version as already installed. Then **Verify** works again: it checks the files you already have and downloads only what's different.
 
+![Finding the stuck game and previewing the fix with -WhatIf](docs/list-and-preview.webp)
+
 Real case (the reason this exists): Fortnite 42.40 wanted 44.78 GB after a paused update. After the fix, Verify finished in about 35 minutes on a hard drive, downloading only the changes.
 
 ## How to use it
@@ -25,6 +27,8 @@ Real case (the reason this exists): Fortnite 42.40 wanted 44.78 GB after a pause
 3. It shows the stuck game(s), asks before closing the launcher and before changing anything.
 4. **Open the Epic Games Launcher** → Library → your game → **⋯ → Manage → Verify**.
 5. **Let Verify finish**: don't pause it and don't close the launcher. It reads your files first (slow on a hard drive), then downloads only what changed.
+
+![The fix: backup first, then what to do in the launcher, and how to undo](docs/fix-done.webp)
 
 If Windows says it protected your PC, click **More info → Run anyway** (the script isn't signed). You can read all of it first: it's one file, [`EpicUpdateRescue.ps1`](EpicUpdateRescue.ps1).
 
