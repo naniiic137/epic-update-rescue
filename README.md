@@ -10,7 +10,7 @@ You can **fix it by hand in a few minutes** (steps below, nothing to download), 
 > - It changes **one word** (`true` → `false`) in the launcher's record of your game and moves **two of the launcher's own bookkeeping files**. That's all. The manual steps below are exactly the same thing.
 > - It **never** touches your game files, **never** connects to the internet, **never** installs anything and has no hidden parts: it's one plain-text file, [`EpicUpdateRescue.ps1`](EpicUpdateRescue.ps1), that you can open in Notepad and read.
 > - It **copies every file it changes** to a backup folder first, and `-Undo` puts them back exactly as they were.
-> - It's open source (MIT), tested on every change, and not affiliated with Epic Games.
+> - It's open source (MIT), tested on every change, and not affiliated with Epic Games. The release zip was scanned by **66 antivirus engines on VirusTotal: [0 detections](https://www.virustotal.com/gui/file/65a53cc1fe606204a3035601d13748b5925560f01f4a4c240abc98f03668da48)**.
 
 ## The problem
 
@@ -70,6 +70,8 @@ These are the SHA-256 fingerprints of version 1.0.0. If even one character of a 
 | `Fix-Epic-Update.bat` | `4DB47ECD0ACD9B8B3EBC1F883AB7A2879DDCF9988EE447C32451AF2CE26BD280` |
 
 To check, open PowerShell in the folder and run `Get-FileHash .\EpicUpdateRescue-1.0.0.zip` (or the file's name): the long code it prints must match the table.
+
+**Antivirus scan:** the release zip on VirusTotal, **0 of 66** engines flag it: [see the scan](https://www.virustotal.com/gui/file/65a53cc1fe606204a3035601d13748b5925560f01f4a4c240abc98f03668da48).
 
 ## What it changes
 
