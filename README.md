@@ -2,9 +2,15 @@
 
 **Paused a game update in the Epic Games Launcher, and now it wants to download the whole game again?** This fixes it, so you download only what the update really changed.
 
-Works for any Epic game, including games made of several parts (Fortnite: the game + Save the World + LEGO Fortnite content). One PowerShell script, nothing to install, everything backed up, one command to undo.
+You can **fix it by hand in a few minutes** (steps below, nothing to download), or let a small, readable script do the same steps for you, with a backup and an undo.
 
 ![tests](https://github.com/naniiic137/epic-update-rescue/actions/workflows/tests.yml/badge.svg)
+
+> **In plain words: what the script does, and what it never does**
+> - It changes **one word** (`true` → `false`) in the launcher's record of your game and moves **two of the launcher's own bookkeeping files**. That's all. The manual steps below are exactly the same thing.
+> - It **never** touches your game files, **never** connects to the internet, **never** installs anything and has no hidden parts: it's one plain-text file, [`EpicUpdateRescue.ps1`](EpicUpdateRescue.ps1), that you can open in Notepad and read.
+> - It **copies every file it changes** to a backup folder first, and `-Undo` puts them back exactly as they were.
+> - It's open source (MIT), tested on every change, and not affiliated with Epic Games.
 
 ## The problem
 
@@ -12,49 +18,33 @@ You start an update, then pause it, close the launcher or shut the PC down. Next
 
 What happened: the launcher moved the game's record to its `Pending` folder and marked it `"bIsIncompleteInstall": true`. From then on it treats the game as a fresh **install**, not an **update**, even though all your files are still there.
 
-## What this does
-
-It makes the launcher see the new version as already installed. Then **Verify** works again: it checks the files you already have and downloads only what's different.
-
-![Finding the stuck game and previewing the fix with -WhatIf](docs/list-and-preview.webp)
+The fix: make the launcher see the new version as already installed. Then **Verify** works again: it checks the files you already have and downloads only what's different.
 
 Real case (the reason this exists): Fortnite 42.40 wanted 44.78 GB after a paused update. After the fix, Verify finished in about 35 minutes on a hard drive, downloading only the changes.
 
-## Run it with one command
+## Fix it by hand (no download)
 
-Open **PowerShell** and paste:
+1. **Close the Epic Games Launcher completely**: right-click its icon by the clock → **Exit**. (If it's still running it undoes your changes.)
+2. **Open the launcher's records**: paste `C:\ProgramData\Epic\EpicGamesLauncher\Data\Manifests\Pending` into the File Explorer address bar.
+3. **Find your game's records**: open each `.item` file with Notepad; the `"DisplayName"` line says which game it is, and `"InstallLocation"` where it's installed. Some games have several parts (Fortnite has 3: Fortnite, Save the World Content, LEGO Fortnite Content); do the next steps for **every part**. Each part's `.item` file name (a long ID) is also the name of its file lists.
+4. **Back up first**: copy those `.item` files, and the game's `.manifest` files from `<InstallLocation>\.egstore\` and `<InstallLocation>\.egstore\Pending\`, into a folder of your own (e.g. on the Desktop). `.egstore` is a hidden folder: paste its full path into the address bar.
+5. **Swap the file lists**: for each part, copy `.egstore\Pending\<ID>.manifest` into `.egstore\` (replace the old one there), then move the one in `.egstore\Pending\` out to your backup folder.
+6. **Change one word**: in each part's `.item`, change `"bIsIncompleteInstall": true,` to `"bIsIncompleteInstall": false,` and save. (If Notepad can't save, open Notepad as administrator first.)
+7. **Move the records up**: move each part's `.item` file from `Manifests\Pending\` to `Manifests\` (one folder up).
+8. **Open the Epic Games Launcher** → Library → your game → **⋯ → Manage → Verify**, and let it finish without pausing or closing the launcher. It checks your files first (slow on a hard drive), then downloads only what changed.
 
-```powershell
-irm https://raw.githubusercontent.com/naniiic137/epic-update-rescue/main/get.ps1 | iex
-```
+To undo: close the launcher and put the backed-up files back where they came from (and remove the `.item` files you moved into `Manifests\`).
 
-Or from **cmd** (Command Prompt):
+## Or let the script do it
 
-```bat
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/naniiic137/epic-update-rescue/main/get.ps1 | iex"
-```
-
-It downloads the script from this repo into `%TEMP%\EpicUpdateRescue` and runs it in its own PowerShell. It shows the stuck game(s) and asks before closing the launcher and before changing anything. Then do steps 4 and 5 below (Verify).
-
-Running code from the internet with one command is only as safe as its source: read [`get.ps1`](get.ps1) (20 lines) and [`EpicUpdateRescue.ps1`](EpicUpdateRescue.ps1) first if you like, or use the download below.
-
-To pass options (for example only list the games):
-
-```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/naniiic137/epic-update-rescue/main/get.ps1))) -List
-```
-
-## How to use it (download)
-
-1. **Download** this repo: green **Code** button → **Download ZIP**, then unzip it.
-2. **Double-click `Fix-Epic-Update.bat`.**
-3. It shows the stuck game(s), asks before closing the launcher and before changing anything.
-4. **Open the Epic Games Launcher** → Library → your game → **⋯ → Manage → Verify**.
-5. **Let Verify finish**: don't pause it and don't close the launcher. It reads your files first (slow on a hard drive), then downloads only what changed.
+1. **Download** the latest **[release](https://github.com/naniiic137/epic-update-rescue/releases/latest)** (`EpicUpdateRescue-1.0.0.zip`) and unzip it.
+2. Optional, but recommended: **check it's the real file** (see [Check the download](#check-the-download)) and **read it**: `EpicUpdateRescue.ps1` is plain text.
+3. **Double-click `Fix-Epic-Update.bat`.** It shows the stuck game(s) and asks before closing the launcher and before changing anything.
+4. Then step 8 above: **Verify** in the launcher, and let it finish.
 
 ![The fix: backup first, then what to do in the launcher, and how to undo](docs/fix-done.webp)
 
-If Windows says it protected your PC, click **More info → Run anyway** (the script isn't signed). You can read all of it first: it's one file, [`EpicUpdateRescue.ps1`](EpicUpdateRescue.ps1).
+If Windows says it protected your PC, that's because the script isn't code-signed (signing costs money, or needs a sponsor): click **More info → Run anyway**, after reading it if you like.
 
 ### From PowerShell
 
@@ -66,6 +56,20 @@ If Windows says it protected your PC, click **More info → Run anyway** (the sc
 ```
 
 If PowerShell refuses to run scripts: `powershell -ExecutionPolicy Bypass -File .\EpicUpdateRescue.ps1 -List`.
+
+![Finding the stuck game and previewing the fix with -WhatIf](docs/list-and-preview.webp)
+
+### Check the download
+
+These are the SHA-256 fingerprints of version 1.0.0. If even one character of a file were changed, its fingerprint would be completely different.
+
+| File | SHA-256 |
+|---|---|
+| `EpicUpdateRescue-1.0.0.zip` | `65A53CC1FE606204A3035601D13748B5925560F01F4A4C240ABC98F03668DA48` |
+| `EpicUpdateRescue.ps1` | `D9DD6E983C339347048DC8DD3F8B85BD0B40DEAC73A424D0E962D47F806AED0C` |
+| `Fix-Epic-Update.bat` | `4DB47ECD0ACD9B8B3EBC1F883AB7A2879DDCF9988EE447C32451AF2CE26BD280` |
+
+To check, open PowerShell in the folder and run `Get-FileHash .\EpicUpdateRescue-1.0.0.zip` (or the file's name): the long code it prints must match the table.
 
 ## What it changes
 
